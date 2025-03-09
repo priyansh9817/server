@@ -15,7 +15,13 @@ connectDB();
 const app = express();  
 
 // Middleware to parse JSON request bodies
-app.use(cors());
+// CORS Configuration
+app.use(
+  cors({
+    origin: "http://localhost:5173", // ✅ Use your frontend URL, not "*"
+    credentials: true, // ✅ Allow cookies and authentication headers
+  })
+);
 app.use(express.json());
 app.use(morgan("dev"))
 
@@ -33,6 +39,6 @@ app.get("/", (req, res) => {
 
 
 // Start the server
-app.listen(PORT, () => {
+app.listen(PORT,"0.0.0.0",() => {
   console.log("Server is running on port 3000");
 });

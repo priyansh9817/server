@@ -3,9 +3,11 @@ import dotenv from "dotenv";
 
 // Load environment variables as soon as the module is imported
 dotenv.config();
+// Fix the deprecation warning
+mongoose.set("strictQuery", false);
 
 const connectDB = async () => {
-    const mongoURL = process.env.MongoDB_URL; // Make sure this matches your .env key
+    const mongoURL = process.env.MongoDB_URL ; // Make sure this matches your .env key
 
     if (!mongoURL) {
         console.error("MongoDB URL is undefined. Check your .env file.");
