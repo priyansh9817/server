@@ -29,8 +29,9 @@ const userSchema = new mongoose.Schema(
       require : true,
     },
     role: {
-      type: Number,
-      default: 0,
+      type: String,  // 🚨 If the type is String, "1" should be passed as a string
+      enum: ['admin', 'user'], // Allowed values
+    default: 'user'
     },
   },
   { timestamps: true }

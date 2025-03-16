@@ -4,7 +4,7 @@ import JWT from "jsonwebtoken";
 
 export const registerController = async (req, res) => {
   try {
-    const { name, email, password, phone, address, answer} = req.body;
+    const { name, email, password, phone, address, answer,role} = req.body;
     //validations
     if (!name) {
       return res.send({ message: "Name is Required" });
@@ -24,6 +24,9 @@ export const registerController = async (req, res) => {
     if (!answer) {
       return res.send({ message: "Answer is Required" });
     }
+    if (!role) {
+      return res.send({ message: "Role is Required" });
+    }
     //check user
     const exisitingUser = await userModel.findOne({ email });
     //exisiting user
@@ -42,7 +45,8 @@ export const registerController = async (req, res) => {
       phone,
       address,
       password: hashedPassword,
-      answer
+      answer,
+      role
     }).save();
 
     res.status(201).send({
@@ -64,40 +68,39 @@ export const registerController = async (req, res) => {
 export const loginController = async (req, res) => {
   try {
     const { email, password } = req.body;
-    //validation
+
     if (!email || !password) {
-        return res.status(400).json({ error: 'email and password req' });
+      return res.status(400).json({ error: "Email and password are required" });
     }
-    //check user
-     // Find the user by aadharCardNumber
-     const user = await userModel.findOne({email});
+
+    const user = await userModel.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
 
     const match = await comparePassword(password, user.password);
     if (!match) {
-      return res.status(200).send({
-        success: false,
-        message: "Invalid Password",
-      });
+      return res.status(401).json({ success: false, message: "Invalid Password" });
     }
-    //token
-    const token = await JWT.sign({ _id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
-    });
+
+    // Generate token
+    const token = JWT.sign({ _id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "7d" });
+
     res.status(200).send({
       success: true,
-      message: "login successfully",
+      message: "Login successfully",
       user: {
         _id: user._id,
         name: user.name,
         email: user.email,
         phone: user.phone,
-        adddress: user.address,
-        role:user.role,
+        address: user.address,
+        role: user.role,
       },
       token,
     });
   } catch (error) {
-    console.log(error);
+    console.error("Login Error:", error);
     res.status(500).send({
       success: false,
       message: "Error in login",
@@ -105,6 +108,7 @@ export const loginController = async (req, res) => {
     });
   }
 };
+
 
 // Forgot password controller
 export const forgotPasswordController = async (req, res) => {

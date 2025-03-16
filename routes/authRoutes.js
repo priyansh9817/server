@@ -19,9 +19,9 @@ router.get("/user-auth", requireSignIn, (req, res) => {
     res.status(200).send({ ok: true });
   });
 // Admin route 
-  router.get("/admin-auth", requireSignIn,isAdmin, (req, res) => {
-    res.status(200).send({ ok: true });
-  });
+router.get("/admin-auth", requireSignIn, isAdmin, (req, res) => {
+  res.status(200).send({ok:true ,message: "Welcome to Admin Dashboard" });
+});
 // Forgot password || post
 router.post('/forgotpassword', forgotPasswordController)
 export default router;

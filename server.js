@@ -5,7 +5,7 @@ import connectDB from "./db.js";
 import morgan from "morgan"; 
 import authRoutes from "./routes/authRoutes.js";
 import cors from "cors"
-
+import categoryRoutes from './routes/CategoryRoutes.js'
 // dotenv file ke library ko require 
 dotenv.config();
 
@@ -27,6 +27,7 @@ app.use(morgan("dev"))
 
 //routes 
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/category', categoryRoutes);
 
 const PORT = process.env.PORT || 4000 // for env connection 
 
@@ -40,5 +41,5 @@ app.get("/", (req, res) => {
 
 // Start the server
 app.listen(PORT,"0.0.0.0",() => {
-  console.log("Server is running on port 3000");
+  console.log("Server is running on port 4000");
 });
