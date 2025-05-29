@@ -31,11 +31,11 @@ export const registerController = async (req, res) => {
     const exisitingUser = await userModel.findOne({ email });
     //exisiting user
     if (exisitingUser) {
-      return res.status(200).send({
-        success: true,
-        message: "Already Register please login",
+      return res.status(409).json({
+        success: false,
+        message: "User already registered, please login",
       });
-    }
+    }    
     //register user
     const hashedPassword = await hashPassword(password);
     //save

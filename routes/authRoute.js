@@ -23,6 +23,6 @@ router.get("/admin-auth", requireSignIn, isAdmin, (req, res) => {
   res.status(200).send({ok:true ,message: "Welcome to Admin Dashboard" });
 });
 // Forgot password || post
-router.post('/forgotpassword', forgotPasswordController)
+router.post('/forgot-password', forgotPasswordController)
 export default router;
 

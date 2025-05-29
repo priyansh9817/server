@@ -1,22 +1,21 @@
-import CategoryModel from "../models/CategoryModel.js";
+import categoryModel from "../models/categoryModel.js";
 import slugify from "slugify";
-export const CreateCategoryController = async (req, res) => {
+export const createCategoryController = async (req, res) => {
   try {
     const { name } = req.body;
     if (!name) {
       return res.status(401).send({ message: "Name is required" });
     }
-    const existingCategory = await CategoryModel.findOne({ name });
+    const existingCategory = await categoryModel.findOne({ name });
     if (existingCategory) {
       return res.status(200).send({
-        success: true,
+        success: false,
         message: "Category Already Exisits",
       });
     }
-    // if catagory new then use this function
-    const category = await new CategoryModel({
+    const category = await new categoryModel({
       name,
-      slug: slugify(name), // conver name in slug for SEO exprience 
+      slug: slugify(name),
     }).save();
     res.status(201).send({
       success: true,
@@ -34,11 +33,11 @@ export const CreateCategoryController = async (req, res) => {
 };
 
 //update category
-export const UpdateCategoryController = async (req, res) => {
+export const updateCategoryController = async (req, res) => {
   try {
     const { name } = req.body;
     const { id } = req.params;
-    const category = await CategoryModel.findByIdAndUpdate(
+    const category = await categoryModel.findByIdAndUpdate(
       id,
       { name, slug: slugify(name) },
       { new: true }
@@ -58,10 +57,10 @@ export const UpdateCategoryController = async (req, res) => {
   }
 };
 
-// get all category
-export const CategoryController = async (req, res) => {
+// get all cat
+export const categoryControlller = async (req, res) => {
   try {
-    const category = await CategoryModel.find({});
+    const category = await categoryModel.find({});
     res.status(200).send({
       success: true,
       message: "All Categories List",
@@ -78,9 +77,9 @@ export const CategoryController = async (req, res) => {
 };
 
 // single category
-export const SingleCategoryController = async (req, res) => {
+export const singleCategoryController = async (req, res) => {
   try {
-    const category = await CategoryModel.findOne({ slug: req.params.slug });
+    const category = await categoryModel.findOne({ slug: req.params.slug });
     res.status(200).send({
       success: true,
       message: "Get SIngle Category SUccessfully",
@@ -97,10 +96,10 @@ export const SingleCategoryController = async (req, res) => {
 };
 
 //delete category
-export const deleteCategoryController = async (req, res) => {
+export const deleteCategoryCOntroller = async (req, res) => {
   try {
     const { id } = req.params;
-    await CategoryModel.findByIdAndDelete(id);
+    await categoryModel.findByIdAndDelete(id);
     res.status(200).send({
       success: true,
       message: "Categry Deleted Successfully",

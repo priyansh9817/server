@@ -1,24 +1,22 @@
 import express from 'express';
-import router from './authRoutes.js';
 import { isAdmin, requireSignIn } from '../middleware/authMiddleware.js';
-import { CategoryController, CreateCategoryController, deleteCategoryController, SingleCategoryController, UpdateCategoryController } from '../controllers/CreateCategoryController.js';
+import {categoryControlller,createCategoryController,deleteCategoryCOntroller,updateCategoryController,} from '../controllers/CategoryController.js';
 
+const router = express.Router();
 
-const route = express.Router()
+// Create category
+router.post('/create-category', requireSignIn, isAdmin, createCategoryController);
 
-// routes - Create catogery 
-router.post('/create-category',requireSignIn,isAdmin,CreateCategoryController)
+// Update category
+router.put('/update-category/:id', requireSignIn, isAdmin, updateCategoryController);
 
-//update category
-router.put("/update-category/:id",requireSignIn,isAdmin,UpdateCategoryController); // YAHA Pe id ham issliye kiye hue hai ki agar mujhe Update ek particular cheez ko karna hai hai issliye 
+// Get all categories
+router.get('/get-category', categoryControlller);
 
-//getALl category
-router.get("/get-category", CategoryController);
+// // Get single category
+// router.get('/single-category/:slug', Singlecategorycontroller);
 
-//single category
-router.get("/single-category/:slug", SingleCategoryController);
+// Delete category
+router.delete('/delete-category/:id', requireSignIn, isAdmin, deleteCategoryCOntroller);
 
-//delete category
-router.delete( "/delete-category/:id",requireSignIn,isAdmin,deleteCategoryController);
-
-export default router
+export default router;

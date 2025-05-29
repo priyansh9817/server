@@ -3,9 +3,11 @@ import dotenv from "dotenv"
 //import colors from "colors";
 import connectDB from "./db.js";
 import morgan from "morgan"; 
-import authRoutes from "./routes/authRoutes.js";
-import cors from "cors"
+import authRoutes from "./routes/authRoute.js"
+import cors from "cors";
 import categoryRoutes from './routes/CategoryRoutes.js'
+import productRoutes from './routes/productRoutes.js'
+import formidableMiddleware from "express-formidable";
 // dotenv file ke library ko require 
 dotenv.config();
 
@@ -23,11 +25,13 @@ app.use(
   })
 );
 app.use(express.json());
-app.use(morgan("dev"))
+app.use(morgan("dev"));
+app.use(formidableMiddleware());
 
 //routes 
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/category', categoryRoutes);
+app.use('/api/v1/product', productRoutes);
 
 const PORT = process.env.PORT || 4000 // for env connection 
 
@@ -43,3 +47,4 @@ app.get("/", (req, res) => {
 app.listen(PORT,"0.0.0.0",() => {
   console.log("Server is running on port 4000");
 });
+
