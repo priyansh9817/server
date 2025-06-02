@@ -18,16 +18,16 @@ const app = express();
 
 // Middleware to parse JSON request bodies
 // CORS Configuration
-app.use(
-  cors({
-    origin: "http://localhost:5173", // ✅ Use your frontend URL, not "*"
-    credentials: true, // ✅ Allow cookies and authentication headers
-  })
-);
+app.use(cors({
+  origin: "http://localhost:5173", // ✅ Exact frontend origin
+  credentials: true               // ✅ Required if you’re sending cookies or using Authorization header
+}));
 app.use(express.json());
-app.use(morgan("dev"));
-app.use(formidableMiddleware());
 
+app.use((req, res, next) => {
+  console.log(`➡️ ${req.method} request to ${req.originalUrl}`);
+  next();
+});
 //routes 
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/category', categoryRoutes);
@@ -36,15 +36,18 @@ app.use('/api/v1/product', productRoutes);
 const PORT = process.env.PORT || 4000 // for env connection 
 
 
+
+
+
 //rest api
 app.get("/", (req, res) => {
   res.send("<h1>Welcome to ecommerce app</h1>");
-});
+})
 
 
 
 // Start the server
-app.listen(PORT,"0.0.0.0",() => {
+app.listen(PORT,() => {
   console.log("Server is running on port 4000");
 });
 
