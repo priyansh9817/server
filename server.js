@@ -8,6 +8,7 @@ import cors from "cors";
 import categoryRoutes from './routes/CategoryRoutes.js'
 import productRoutes from './routes/productRoutes.js'
 import formidableMiddleware from "express-formidable";
+import path from "path";
 // dotenv file ke library ko require 
 dotenv.config();
 
@@ -23,7 +24,7 @@ app.use(cors({
   credentials: true               // ✅ Required if you’re sending cookies or using Authorization header
 }));
 app.use(express.json());
-
+app.use(express.static(path.join(__dirname, "./client/build"))); // for image upload 
 app.use((req, res, next) => {
   console.log(`➡️ ${req.method} request to ${req.originalUrl}`);
   next();
@@ -40,6 +41,10 @@ const PORT = process.env.PORT || 4000 // for env connection
 
 
 //rest api
+app.use('*', function(req,res){
+  res.sendFile(path.join(__dirname, './client/build/index.html'));
+})
+
 app.get("/", (req, res) => {
   res.send("<h1>Welcome to ecommerce app</h1>");
 })
