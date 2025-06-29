@@ -1,5 +1,5 @@
 import express from "express";
-import {registerController,loginController,testController, forgotPasswordController,} from "../controllers/authcontroller.js";
+import {registerController,loginController,testController, forgotPasswordController,updateProfileController, getAllOrdersController, getOrdersController, orderStatusController} from "../controllers/authcontroller.js";
 import { isAdmin, requireSignIn } from "../middleware/authMiddleware.js";
 
 //router object
@@ -24,5 +24,22 @@ router.get("/admin-auth", requireSignIn, isAdmin, (req, res) => {
 });
 // Forgot password || post
 router.post('/forgot-password', forgotPasswordController)
+
+
+//update profile
+router.put("/profile", requireSignIn, updateProfileController);
 export default router;
 
+//orders
+router.get("/orders", requireSignIn, getOrdersController);
+
+//all orders
+router.get("/all-orders", requireSignIn, isAdmin, getAllOrdersController);
+
+// order status update
+router.put(
+  "/order-status/:orderId",
+  requireSignIn,
+  isAdmin,
+  orderStatusController
+);

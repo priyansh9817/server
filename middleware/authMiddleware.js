@@ -1,6 +1,6 @@
 import JWT from "jsonwebtoken";
 import userModel from "../models/userModel.js"; // Ensure correct import
-
+import formidable from "formidable";
 // Middleware to verify user authentication
 export const requireSignIn = async (req, res, next) => {
   try {
@@ -40,3 +40,26 @@ export const isAdmin = async (req, res, next) => {
     res.status(500).json({ success: false, message: "Server Error in Admin Middleware" });
   }
 };
+// Custom middleware
+const formMiddleware = (req, res, next) => {
+  const form = formidable({ multiples: false });
+
+  form.parse(req, (err, fields, files) => {
+    if (err) {
+      console.error("Formidable error:", err);
+      return res.status(400).json({ success: false, message: "Form parsing error" });
+    }
+
+    req.fields = fields;
+    req.files = files;
+    next();
+  });
+};
+export const formidableMiddleware = (req, res, next) => {
+  if (req.method === "POST" || req.method === "PUT") {
+    formMiddleware(req, res, next);
+  } else {
+    next();
+  }
+};
+
