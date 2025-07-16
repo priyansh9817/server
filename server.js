@@ -9,6 +9,13 @@ import categoryRoutes from './routes/CategoryRoutes.js'
 import productRoutes from './routes/productRoutes.js'
 import formidableMiddleware from "express-formidable";
 import path from "path";
+import { fileURLToPath } from "url";
+
+
+// ✅ Fix for __dirname in ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 // dotenv file ke library ko require 
 dotenv.config();
 
@@ -29,6 +36,9 @@ app.use((req, res, next) => {
   console.log(`➡️ ${req.method} request to ${req.originalUrl}`);
   next();
 });
+// ✅ Static file serving
+app.use(express.static(path.join(__dirname, "./client/build")));
+
 //routes 
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/category', categoryRoutes);

@@ -1,7 +1,7 @@
 import express from "express";
-import {registerController,loginController,testController, forgotPasswordController,updateProfileController, getAllOrdersController, getOrdersController, orderStatusController} from "../controllers/authcontroller.js";
+import {registerController,loginController,testController, forgotPasswordController,updateProfileController, getAllOrdersController, getOrdersController, orderStatusController, googleRegisterController} from "../controllers/authcontroller.js";
 import { isAdmin, requireSignIn } from "../middleware/authMiddleware.js";
-
+import { googleLoginController } from "../controllers/authcontroller.js";
 //router object
 const router = express.Router();
 
@@ -43,3 +43,5 @@ router.put(
   isAdmin,
   orderStatusController
 );
+router.post("/google-register", googleRegisterController);
+router.post("/google-login", googleLoginController);

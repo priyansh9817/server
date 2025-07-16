@@ -2,6 +2,7 @@ import userModel from "../models/userModel.js";
 import { comparePassword, hashPassword } from "../helper/authHelper.js";
 import JWT from "jsonwebtoken";
 import orderModel from "../models/orderModel.js";
+import { OAuth2Client } from 'google-auth-library';
 
 export const registerController = async (req, res) => {
   try {
@@ -262,5 +263,113 @@ export const orderStatusController = async (req, res) => {
       message: "Error While Updateing Order",
       error,
     });
+  }
+};
+
+// Google OAuth2 client setup
+// google register controller
+export const googleRegisterController = async (req, res) => {
+  try {
+    const { token } = req.body;
+
+    // Verify token
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const { name, email } = ticket.getPayload();
+
+    // Check if user already exists
+    const existingUser = await userModel.findOne({ email });
+    //exisiting user
+    if (existingUser) {
+      return res.status(409).json({
+        success: false,
+        message: "User already registered, please login",
+      });
+    }   
+
+    // Create new user
+    const user = await new userModel({
+      name,
+      email,
+      password: Math.random().toString(36).slice(-8), // dummy password
+      phone: "0000000000",
+      address: "Registered via Google",
+      answer: "google", // fallback for forgot-password field
+      role: "user",     // or "admin" if needed
+    }).save();
+
+    const jwtToken = JWT.sign({ _id: user._id, role: user.role }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Google account registered successfully!",
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        address: user.address,
+        role: user.role,
+      },
+      token: jwtToken,
+    });
+  } catch (error) {
+    console.error("Google Registration Error:", error);
+    res.status(500).json({ success: false, message: "Google registration failed." });
+  }
+};
+
+// login with google
+
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+export const googleLoginController = async (req, res) => {
+  try {
+    const { token } = req.body;
+
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const { email } = ticket.getPayload();
+
+    // Check if user exists
+    const user = await userModel.findOne({ email });
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "This Google account is not registered. Please sign up first.",
+      });
+    }
+
+    // Generate JWT
+    const jwtToken = JWT.sign({ _id: user._id, role: user.role }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Google Login Successful",
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        address: user.address,
+        role: user.role,
+      },
+      token: jwtToken,
+    });
+  } catch (error) {
+    console.error("Google Login Error:", error);
+    res.status(500).json({ success: false, message: "Google Login Failed" });
   }
 };
